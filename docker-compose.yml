@@ -1,0 +1,19 @@
+version: '3.6'
+# Deploys Spring Music app with in-memory persistence
+#
+# usage:
+# sudo docker-compose build
+# sudo docker-compose up
+
+services:
+
+  bac-224-bot:
+    image: bac-224-bot-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bac224Bot
+    ports:
+      - 8080:8080
+
+

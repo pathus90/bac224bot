@@ -1,16 +1,5 @@
 package com.github.messenger4j.quickstart.boot;
 
-import static com.github.messenger4j.Messenger.CHALLENGE_REQUEST_PARAM_NAME;
-import static com.github.messenger4j.Messenger.MODE_REQUEST_PARAM_NAME;
-import static com.github.messenger4j.Messenger.SIGNATURE_HEADER_NAME;
-import static com.github.messenger4j.Messenger.VERIFY_TOKEN_REQUEST_PARAM_NAME;
-import static com.github.messenger4j.send.message.richmedia.RichMediaAsset.Type.AUDIO;
-import static com.github.messenger4j.send.message.richmedia.RichMediaAsset.Type.FILE;
-import static com.github.messenger4j.send.message.richmedia.RichMediaAsset.Type.IMAGE;
-import static com.github.messenger4j.send.message.richmedia.RichMediaAsset.Type.VIDEO;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
-
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exception.MessengerApiException;
@@ -31,12 +20,7 @@ import com.github.messenger4j.send.message.template.ButtonTemplate;
 import com.github.messenger4j.send.message.template.GenericTemplate;
 import com.github.messenger4j.send.message.template.ListTemplate;
 import com.github.messenger4j.send.message.template.ReceiptTemplate;
-import com.github.messenger4j.send.message.template.button.Button;
-import com.github.messenger4j.send.message.template.button.CallButton;
-import com.github.messenger4j.send.message.template.button.LogInButton;
-import com.github.messenger4j.send.message.template.button.LogOutButton;
-import com.github.messenger4j.send.message.template.button.PostbackButton;
-import com.github.messenger4j.send.message.template.button.UrlButton;
+import com.github.messenger4j.send.message.template.button.*;
 import com.github.messenger4j.send.message.template.common.Element;
 import com.github.messenger4j.send.message.template.receipt.Address;
 import com.github.messenger4j.send.message.template.receipt.Adjustment;
@@ -46,18 +30,17 @@ import com.github.messenger4j.send.recipient.IdRecipient;
 import com.github.messenger4j.send.senderaction.SenderAction;
 import com.github.messenger4j.userprofile.UserProfile;
 import com.github.messenger4j.webhook.Event;
-import com.github.messenger4j.webhook.event.AccountLinkingEvent;
-import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
-import com.github.messenger4j.webhook.event.MessageDeliveredEvent;
-import com.github.messenger4j.webhook.event.MessageEchoEvent;
-import com.github.messenger4j.webhook.event.MessageReadEvent;
-import com.github.messenger4j.webhook.event.OptInEvent;
-import com.github.messenger4j.webhook.event.PostbackEvent;
-import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
-import com.github.messenger4j.webhook.event.TextMessageEvent;
+import com.github.messenger4j.webhook.event.*;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.LocationAttachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
@@ -65,25 +48,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-/**
- * This is the main class for inbound and outbound communication with the Facebook Messenger Platform. The callback
- * handler is responsible for the webhook verification and processing of the inbound messages and events. It showcases
- * the features of the Messenger Platform.
- *
- * @author Max Grabenhorst
- */
+import static com.github.messenger4j.Messenger.*;
+import static com.github.messenger4j.send.message.richmedia.RichMediaAsset.Type.*;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+
+
 @RestController
 @RequestMapping("/callback")
 public class MessengerPlatformCallbackHandler {
